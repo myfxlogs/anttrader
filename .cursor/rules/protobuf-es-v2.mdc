@@ -1,0 +1,23 @@
+---
+description: Buf Protobuf-ES v2 与 Connect v2 依赖对齐，禁止混用 v1 生成物
+alwaysApply: true
+---
+
+# Protobuf-ES 与 Connect 栈（强制 v2）
+
+## 版本约定
+
+- **`@bufbuild/protobuf`**：仅使用 **v2.x**（与 npm 上 `2.x` 大版本一致），**禁止**为「修编译」而整体降级到 **1.x**。
+- **`@bufbuild/protoc-gen-es`**（dev）：与 **`@bufbuild/protobuf` 同一大版本**（均为 **2.x**），与 `frontend/package.json` 中声明保持一致。
+- **`@connectrpc/connect` / `@connectrpc/connect-web`**：使用 **v2.x**，其 peer 依赖要求 **`@bufbuild/protobuf` v2**；不得与 Protobuf-ES v1 混用。
+
+## 生成物一致性
+
+- `frontend/src/gen/**/*.ts` 必须由 **同一套** `buf generate` + `protoc-gen-es` 生成；**禁止**仓库内同时存在：
+  - **v1 残留（须消灭）**：`extends Message<…>` 类、从 `@bufbuild/protobuf` **值导入** `Message` 与 `proto3`（非仅 `import type`）、`proto3.util`、生成头注释 **`protoc-gen-es v1`**。
+  - **v2 合法形态**：`@bufbuild/protobuf/codegenv2`、`fileDesc` / `serviceDesc` / `messageDesc`；生成头为 **`protoc-gen-es v2`**。其中 **`import type { Message } from "@bufbuild/protobuf"`** 为 v2 的 **类型别名**（`Message<"package.Type">`），**不属于** v1 运行时 `Message` 类，勿误判。
+- 修改 `.proto` 或升级上述依赖后，必须在仓库根执行 **`make proto`**（先 `make proto-tools` 与 `frontend` 的 `npm ci` 以保证 PATH 中含 `buf`、`protoc-gen-go`、`protoc-gen-connect-go`、`protoc-gen-es`），并提交**全部**变更的生成文件，再跑 **`npm run build`**（frontend）。
+
+## 排错原则
+
+- 若出现 `Message` 未从 `@bufbuild/protobuf` 导出、或缺少 `codegenv2` 子路径导出，优先判定为 **生成物与依赖版本不一致**，通过 **统一 regen** 解决，而不是在 v1/v2 之间来回改 `package.json` 碰运气。
