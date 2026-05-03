@@ -9,6 +9,7 @@ coverage/
 
 # Go build output (local)
 backend/bin/
+tools/proto-gen/bin/
 
 # Runtime
 *.pid
