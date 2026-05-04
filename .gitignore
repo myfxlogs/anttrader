@@ -33,10 +33,13 @@ docker-compose.override.yml
 .DS_Store
 .windsurf/
 .windsurfrules
+.cursor/
+.trae/
 
 # Local backups (large, not source of truth)
 bak260421/
 _nonproduction_archive/
+backups/
 
 # Local experiments / upstream mirrors — not part of AntTrader product repo
 Emulator/
