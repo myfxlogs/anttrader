@@ -178,7 +178,7 @@ export default function SystemAI() {
     ]
   }, [configs, defaultCustomConfigured])
   return (
-    <div className="space-y-6 pb-24 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
@@ -267,7 +267,7 @@ export default function SystemAI() {
                           color: '#B8960B',
                         }}
                       >
-                        <Icon className="w-4 h-4" style={{ color: '#B8960B' }} />
+                        <Icon className="w-4 h-4 text-[#B8960B]" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -513,28 +513,33 @@ export default function SystemAI() {
               </div>
           </Section>
 
-          <div className="fixed bottom-0 left-64 right-0 bg-white/90 backdrop-blur border-t border-gray-200 px-8 py-3 flex items-center justify-between z-40">
-            <div className="text-sm text-gray-600 flex items-center gap-2 flex-wrap">
-              {draft.enabled
-                ? <SoftTag>{t('ai.systemAI.statusBar.enabled', { defaultValue: '已启用' })}</SoftTag>
-                : <SoftTag>{t('ai.systemAI.statusBar.disabled', { defaultValue: '未启用' })}</SoftTag>}
-              {draft.has_secret && <SoftTag>{t('ai.systemAI.statusBar.keyReady', { defaultValue: '密钥就绪' })}</SoftTag>}
-              {validating && <SoftTag>{t('ai.systemAI.statusBar.checking', { defaultValue: '连通性检测中…' })}</SoftTag>}
-              {!validating && validated && <SoftTag>{t('ai.systemAI.statusBar.connected', { defaultValue: '连接正常' })}</SoftTag>}
-              {!validating && !validated && (draft.models || []).length > 0 && error && (
-                <span className="text-xs text-slate-600">{t('ai.systemAI.status.connectionFailed', { defaultValue: '连接异常，请检查上方提示' })}</span>
-              )}
+          <Section
+            step={4}
+            title={t('ai.settings.actions.saveConfig', { defaultValue: '保存配置' })}
+          >
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600 flex items-center gap-2 flex-wrap">
+                {draft.enabled
+                  ? <SoftTag>{t('ai.systemAI.statusBar.enabled', { defaultValue: '已启用' })}</SoftTag>
+                  : <SoftTag>{t('ai.systemAI.statusBar.disabled', { defaultValue: '未启用' })}</SoftTag>}
+                {draft.has_secret && <SoftTag>{t('ai.systemAI.statusBar.keyReady', { defaultValue: '密钥就绪' })}</SoftTag>}
+                {validating && <SoftTag>{t('ai.systemAI.statusBar.checking', { defaultValue: '连通性检测中…' })}</SoftTag>}
+                {!validating && validated && <SoftTag>{t('ai.systemAI.statusBar.connected', { defaultValue: '连接正常' })}</SoftTag>}
+                {!validating && !validated && (draft.models || []).length > 0 && error && (
+                  <span className="text-xs text-slate-600">{t('ai.systemAI.status.connectionFailed', { defaultValue: '连接异常，请检查上方提示' })}</span>
+                )}
+              </div>
+              <Button
+                size="large"
+                onClick={saveConfig}
+                loading={savingConfig}
+                icon={<Check className="w-4 h-4" />}
+                type="primary"
+              >
+                {t('ai.settings.actions.saveConfig', { defaultValue: '保存配置' })}
+              </Button>
             </div>
-            <Button
-              size="large"
-              onClick={saveConfig}
-              loading={savingConfig}
-              icon={<Check className="w-4 h-4" />}
-              type="primary"
-            >
-              {t('ai.settings.actions.saveConfig', { defaultValue: '保存配置' })}
-            </Button>
-          </div>
+          </Section>
         </>
       )}
     </div>

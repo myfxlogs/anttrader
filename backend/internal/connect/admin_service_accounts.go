@@ -105,13 +105,16 @@ func (s *AdminService) UnfreezeAccount(ctx context.Context, req *connect.Request
 	return connect.NewResponse(&emptypb.Empty{}), nil
 }
 
+func derefString(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
 func convertAccountWithUserToProto(a *repository.AccountWithUser) *v1.AccountWithUser {
 	if a == nil {
 		return &v1.AccountWithUser{}
-	}
-	var lastConnectedAt *timestamppb.Timestamp
-	if a.LastConnectedAt != nil {
-		lastConnectedAt = timestamppb.New(*a.LastConnectedAt)
 	}
 	return &v1.AccountWithUser{
 		Id:              a.ID.String(),
@@ -131,8 +134,8 @@ func convertAccountWithUserToProto(a *repository.AccountWithUser) *v1.AccountWit
 		Leverage:        int32(a.Leverage),
 		Currency:        a.Currency,
 		UserEmail:       a.UserEmail,
-		UserNickname:    a.UserNickname,
-		LastConnectedAt: lastConnectedAt,
+		UserNickname:    derefString(a.UserNickname),
+		LastConnectedAt: convertTimeToTimestamp(a.LastConnectedAt),
 		CreatedAt:       timestamppb.New(a.CreatedAt),
 	}
 }

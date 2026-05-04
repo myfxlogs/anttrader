@@ -79,3 +79,39 @@ func (r *AdminRepository) GetDashboardStats(ctx context.Context) (*model.Dashboa
 
 	return stats, nil
 }
+
+func normalizePage(page, pageSize int) (int, int) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+	if pageSize > 100 {
+		pageSize = 100
+	}
+	return page, pageSize
+}
+
+func (r *AdminRepository) GetTradingSummary(ctx context.Context, startDate, endDate string) (*model.TradingSummary, error) {
+	summary := &model.TradingSummary{}
+	summary.Period.StartDate = startDate
+	summary.Period.EndDate = endDate
+
+	_ = r.db.QueryRow(ctx, `SELECT COUNT(*) FROM users`).Scan(&summary.Overview.TotalUsers)
+	_ = r.db.QueryRow(ctx, `SELECT COUNT(*) FROM users WHERE status = 'active'`).Scan(&summary.Overview.ActiveUsers)
+	_ = r.db.QueryRow(ctx, `SELECT COUNT(*) FROM mt_accounts`).Scan(&summary.Overview.TotalAccounts)
+	_ = r.db.QueryRow(ctx, `SELECT COUNT(*) FROM mt_accounts WHERE account_status = 'connected'`).Scan(&summary.Overview.ConnectedAccounts)
+
+	_ = r.db.QueryRow(ctx, `
+		SELECT COUNT(*), COALESCE(SUM(volume), 0), COALESCE(SUM(profit), 0)
+		FROM trade_records
+		WHERE DATE(close_time) BETWEEN $1 AND $2`, startDate, endDate,
+	).Scan(&summary.Trading.ClosedOrders, &summary.Trading.TotalVolume, &summary.Trading.TotalProfit)
+
+	return summary, nil
+}
+
+func (r *AdminRepository) HasPermission(ctx context.Context, role, permissionCode string) (bool, error) {
+	return role == "admin", nil
+}

@@ -1,6 +1,13 @@
 import { adminAccountClient, adminConfigClient, adminLogClient, adminSystemClient, adminTradingClient, adminUserClient } from './connect';
 
-export type { DashboardStats, AdminLog, AccountWithUser, UserWithAccounts, TradingSummary, SystemConfig } from '../gen/api_pb';
+// Note: getDashboard is defined in AdminUserService, not AdminSystemService
+
+export type { DashboardStats } from '../gen/admin_dashboard_pb';
+export type { AdminLog } from '../gen/admin_log_pb';
+export type { AccountWithUser } from '../gen/admin_account_pb';
+export type { UserWithAccounts } from '../gen/admin_user_entity_pb';
+export type { TradingSummary } from '../gen/admin_trading_summary_pb';
+export type { SystemConfig } from '../gen/admin_config_pb';
 
 export type UserListParams = {
   page?: number;
@@ -47,7 +54,7 @@ export type LogListParams = {
 
 export const adminApi = {
   getDashboard: async () => {
-    return await adminSystemClient.getDashboard({});
+    return await adminUserClient.getDashboard({});
   },
 
   getDashboardStats: async () => {
@@ -208,7 +215,7 @@ export const adminApi = {
   },
 
   resolveAlert: async (alertId: string) => {
-    await adminTradingClient.resolveAlert({ alertId });
+    await adminSystemClient.resolveAlert({ alertId });
   },
 
   clearCache: async () => {
