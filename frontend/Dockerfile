@@ -1,5 +1,5 @@
 # 与 CI（Node 22）对齐；镜像源无 22 时可：`docker compose build --build-arg NODE_BUILD_IMAGE=docker.io/library/node:22-alpine frontend`
-ARG NODE_BUILD_IMAGE=hub.rat.dev/library/node:22-alpine
+ARG NODE_BUILD_IMAGE=hub.rat.dev/library/node:24.15-alpine
 FROM ${NODE_BUILD_IMAGE} AS builder
 
 WORKDIR /app

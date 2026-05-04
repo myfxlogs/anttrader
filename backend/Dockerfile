@@ -1,4 +1,4 @@
-FROM golang:1.25.6-alpine AS builder
+FROM golang:1.26.2-alpine AS builder
 
 WORKDIR /app
 
@@ -24,7 +24,7 @@ COPY . .
 RUN go build -ldflags="-w -s" -o /antrader ./cmd/server
 RUN go build -ldflags="-w -s" -o /create_admin ./cmd/create_admin
 
-FROM golang:1.25.6-alpine
+FROM golang:1.26.2-alpine
 
 WORKDIR /app
 
